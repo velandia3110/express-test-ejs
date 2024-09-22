@@ -1,0 +1,104 @@
+<%- include("template/header", {tituloWeb:"Detalle de mascota"}) %>
+    <div class="container">
+        <h1>Detalle Mascota</h1>
+        <% if (error) { %>
+            <p>
+                <%= message %>
+            </p>
+            <div class="d-grid gap-2">
+                <a href="/pets" class="btn btn-dark"> Volver a Mascotas</a>
+            </div>
+            
+        <% } %>
+        <% if (!error) { %>
+
+            <form id="updateForm"
+                data-id="<%= pet.id %>"
+            >
+                <input 
+                    type="text"
+                    class="form-control my-2"
+                    name="name"
+                    value="<%= pet.name %>"
+                    id="name"
+                >
+                <input 
+                    type="text"
+                    class="form-control my-2"
+                    name="description"
+                    value="<%= pet.description %>"
+                    id="description"
+                >
+                <div class="d-grid gap-2">
+                    <button
+                        class="btn btn-warning bt-sm"
+                        type="submit"
+                    >
+                        Editar
+                    </button>
+                </div>
+            </form>
+            <hr>
+            <div class="d-grid gap-2">
+                <button
+                class="btn btn-danger btn-sm mt-5"
+                id="btnDelete"
+                data-id="<%= pet.id %>"
+            >
+                Eliminar
+            </button>
+            </div>
+        <% } %>
+    </div>    
+
+<%- include("template/footer") %>
+<script>
+    const btnDelete = document.querySelector("#btnDelete")
+    btnDelete.addEventListener('click', async() => {
+        const id = btnDelete.dataset.id
+        try{
+            const data = await fetch(`/pets/${id}`,{
+                method: 'delete'
+            })
+            const res = await data.json()
+            if(res.state){
+                window.location.href = '/pets'
+            }else{
+                console.log(res)
+            }
+        }catch(error){
+            console.error(error)
+        }
+
+    })
+
+    const form = document.querySelector('#updateForm')
+    form.addEventListener('submit', async(e) => {
+        e.preventDefault()
+        const name = document.querySelector('#description').value
+        const description = document.querySelector('#description').value 
+        const id = form.dataset.id
+        try{
+            const data = await fetch(`/pets/${id}`,{
+                method: 'put',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body:JSON.stringify({
+                    name,
+                    description
+                })
+            })
+            const res = await data.json()
+            if(res.state){
+                window.location.href = '/pets'
+            }else{
+                console.log(res)
+            }
+        }catch(error){
+            console.error(error)
+        }
+        
+    })
+</script>
+
