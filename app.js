@@ -1,7 +1,21 @@
 const express = require('express')
 const app = express()
 
-const port = 3000
+require('dotenv').config()
+
+const port = process.env.PORT || 3000
+
+//conexion a BD
+const mongoose = require('mongoose')
+
+const uri = `mongodb+srv://${process.env.USER}:${process.env.PASSWORD}@veterinaria.tmhur.mongodb.net/${process.env.BDNAME}?retryWrites=true&w=majority&appName=veterinaria`
+
+mongoose.connect(uri,
+)
+.then(() => console.log("BD connected"))
+.catch(err => console.error(err))
+
+
 
 
 //motor de plantillas
@@ -13,13 +27,9 @@ app.set('views',__dirname+'/views')
 app.use(express.static(__dirname + "/public"))
 
 
-app.get("/", (req,res) => {
-    res.render("index",{titulo:"mi titulo dinámico"})
-})
+app.use('/',require('./router/routes'))
+app.use('/pets',require('./router/pets'))
 
-app.get("/services", (req, res) => {
-    res.render("services",{tituloServicios:"Este es un mensaje de service"})
-})
 
 app.use((req, res, next) =>{
     res.status(404).render("404")
